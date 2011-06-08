@@ -213,25 +213,7 @@ public class PostIt extends JDialog implements ActionListener{
 		c.add(textPane, BorderLayout.CENTER);
 
 		readOptionFile();
-		try{
-			//lecture du fichier et écriture dans la textArea
-			bis = new BufferedInputStream(new FileInputStream(new File(locateTexte)));
-			byte[] buf = new byte[8];
-
-			s="";
-			while(bis.read(buf) > -1){
-				for(byte bit : buf){
-					s= s + (char)bit;
-				}
-			}
-			textPane.insert(s,0);
-			bis.close();
-
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		this.textPane.setText(this.lireText());
 		this.setVisible(true);
 	}
 
@@ -295,32 +277,18 @@ public class PostIt extends JDialog implements ActionListener{
 		return resultat;
 	}
 
-	//Lecture du contenu du post-it et enregistrement
+	/**
+	 * Enregistrement du contenu du post-it dans le fichier de sauvegarde du texte
+	 */
 	private void enregistrerText(){
+		
 		try{
 			bos = new BufferedOutputStream(new FileOutputStream(new File(locateTexte)));
-
 			s=textPane.getText();
-			byte[] buf = new byte[8];
-			int posBuf = 0;
+			
 			byte[] byteString = s.getBytes();
-			for(int i=0; i<s.length(); i++){
-				buf[posBuf] = byteString[i];
-				posBuf++;
-				if(posBuf>7){
-					posBuf=0;
-					for(byte bit : buf){
-						bos.write(bit);
-					}
-				}
-			}
-			while(posBuf<8){
-				buf[posBuf]=(byte)' ';
-				posBuf++;
-			}
-			for(byte bit : buf){
-				bos.write(bit);
-			}
+			bos.write(byteString, 0, byteString.length);
+			
 			bos.close();
 
 		} catch (FileNotFoundException ex) {
@@ -330,6 +298,30 @@ public class PostIt extends JDialog implements ActionListener{
 		}
 	}
 
+	/**
+	 * Lecture du fichier de sauvegarde du texte
+	 * @return String - a string representing the contents of the backup file
+	 */
+	private String lireText(){
+		String s = new String();
+		int val;
+		try{
+			bis = new BufferedInputStream(new FileInputStream(new File(locateTexte)));
+			byte[] buf = new byte[64];
+
+			while(-1 != (val= bis.read(buf,0,64)) ){
+				s += new String(buf, 0, val);
+			}
+			bis.close();
+
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return s;
+	}
+	
 	//Lecture du fichier de configuration et application de ses paramètres
 	private void readOptionFile(){
 		try{
