@@ -14,7 +14,7 @@ public class PostIt extends JDialog implements ActionListener, DocumentListener{
 	private String s; private static String locateTexte, locateOption, locatePolice;
 	private APropos apropos;
 	private int x,y; public int hauteur, largeur;
-	private MenuItem aProposItem, reglagesItem, enregistrerItem, defaultItem;
+	private MenuItem aProposItem, reglagesItem, closetItem;
 
 	//Initialise les chemins utilisés par le programme
 	public static void chemins(){
@@ -61,30 +61,21 @@ public class PostIt extends JDialog implements ActionListener, DocumentListener{
 			setSize(largeur, hauteur);
 			System.out.println("Fonte sélectionnée :\tPolice : " + f.getName() + " \tStyle : " + f.getStyle() + "\tPoints : " + f.getSize());
 			editOptionFile();
+			enregistrerPolice();
 			//Libérer les ressources car la boîte de dialogue a juste été cachée, 
 			//pas détruite
 			ongl.dispose();
 		}
-		else if(e.getSource()==enregistrerItem){
-			try {
-				enregistrer();
-			} catch (IOException e1) {
-				e1.printStackTrace();
-			}
-		}
 		else if(e.getSource()==boutonClose){
-			//On enregistre la taille mais pas le texte lorsqu'on masque le post-it
-			editOptionFile();
 			setVisible(false);
 		}
-		else if(e.getSource()==defaultItem){
+		else if(e.getSource()==closetItem){
 			//On enregistre à la fermeture du programme
 			try {
 				enregistrer();
 			} catch (IOException e1) {
 				e1.printStackTrace();
 			}
-			editOptionFile();
 			System.exit(0);
 		}
 	}
@@ -123,17 +114,14 @@ public class PostIt extends JDialog implements ActionListener, DocumentListener{
 			PopupMenu popup = new PopupMenu();
 			aProposItem = new MenuItem("A propos");
 			reglagesItem = new MenuItem("Réglages");
-			enregistrerItem = new MenuItem("Enregistrer");
-			defaultItem = new MenuItem("Quitter");
+			closetItem = new MenuItem("Quitter");
 
 			aProposItem.addActionListener(this);
 			reglagesItem.addActionListener(this);
-			enregistrerItem.addActionListener(this);
-			defaultItem.addActionListener(this);
+			closetItem.addActionListener(this);
 			popup.add(aProposItem);
 			popup.add(reglagesItem);
-			popup.add(enregistrerItem);
-			popup.add(defaultItem);
+			popup.add(closetItem);
 
 			trayIcon = new TrayIcon(image, null , popup);
 
@@ -358,7 +346,6 @@ public class PostIt extends JDialog implements ActionListener, DocumentListener{
 			dos = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(new File(locateOption))));
 			dos.writeInt(x);
 			dos.writeInt(y);
-			System.out.println(hauteur+"  "+largeur);
 			dos.writeInt(hauteur);
 			dos.writeInt(largeur);
 			dos.close();
