@@ -1,11 +1,11 @@
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
-
 import javax.swing.*;
+import javax.swing.event.* ;
 
 @SuppressWarnings("serial")
-public class PostIt extends JDialog implements ActionListener{
+public class PostIt extends JDialog implements ActionListener, DocumentListener{
 
 	private JTextArea textPane; private JPanel north, east, west, south;
 	private JButton bouton, boutonClose;
@@ -33,7 +33,16 @@ public class PostIt extends JDialog implements ActionListener{
 		locateOption = rep_backup + "option";
 		locatePolice = rep_backup + "fonte";
 	}
+	//Interception des modifications du contenu du post-it
+	public void insertUpdate(DocumentEvent e){
+		enregistrerText();
+	}
+	public void removeUpdate(DocumentEvent e){
+		enregistrerText();
+	}
+	/*Inutile mais obligatoire*/public void changedUpdate(DocumentEvent e){}
 
+	//Interception des clics
 	public void actionPerformed(ActionEvent e){
 		if(e.getSource()==aProposItem){
 			apropos.setVisible(true);
@@ -49,7 +58,7 @@ public class PostIt extends JDialog implements ActionListener{
 			largeur = i[1];
 			//On applique les changements
 			textPane.setFont(f);
-			setSize(hauteur, largeur);
+			setSize(largeur, hauteur);
 			System.out.println("Fonte sélectionnée :\tPolice : " + f.getName() + " \tStyle : " + f.getStyle() + "\tPoints : " + f.getSize());
 			editOptionFile();
 			//Libérer les ressources car la boîte de dialogue a juste été cachée, 
@@ -168,6 +177,7 @@ public class PostIt extends JDialog implements ActionListener{
 		//création du JTextArea, avec retour à la ligne automatique et coupure des mots
 		//inactive
 		textPane = new JTextArea();
+		textPane.getDocument().addDocumentListener(this);
 		textPane.setLineWrap(true);
 		textPane.setWrapStyleWord(true);
 		//On récupère la police du post-it
@@ -272,7 +282,7 @@ public class PostIt extends JDialog implements ActionListener{
 			//En cas de problème retourner une valeur nulle afin
 			//que le post-it utilise la fonte "Note This" embarquée
 			return null;
-			}
+		}
 		//Sinon retourner la fonte créée à partir des informations lues
 		return resultat;
 	}
@@ -281,14 +291,14 @@ public class PostIt extends JDialog implements ActionListener{
 	 * Enregistrement du contenu du post-it dans le fichier de sauvegarde du texte
 	 */
 	private void enregistrerText(){
-		
+
 		try{
 			bos = new BufferedOutputStream(new FileOutputStream(new File(locateTexte)));
 			s=textPane.getText();
-			
+
 			byte[] byteString = s.getBytes();
 			bos.write(byteString, 0, byteString.length);
-			
+
 			bos.close();
 
 		} catch (FileNotFoundException ex) {
@@ -321,7 +331,7 @@ public class PostIt extends JDialog implements ActionListener{
 		}
 		return s;
 	}
-	
+
 	//Lecture du fichier de configuration et application de ses paramètres
 	private void readOptionFile(){
 		try{
