@@ -8,7 +8,7 @@ import javax.swing.event.* ;
 public class PostIt extends JDialog implements ActionListener, DocumentListener{
 
 	private JTextArea textPane; private JPanel north, east, west, south;
-	private JButton bouton, boutonClose;
+	private JButton boutonClose;
 	private BufferedInputStream bis; private BufferedOutputStream bos;
 	private DataInputStream dis; private DataOutputStream dos;
 	private String s; private static String locateTexte, locateOption, locatePolice;
@@ -65,7 +65,7 @@ public class PostIt extends JDialog implements ActionListener, DocumentListener{
 			//pas détruite
 			ongl.dispose();
 		}
-		else if(e.getSource()==enregistrerItem || e.getSource()==bouton){
+		else if(e.getSource()==enregistrerItem){
 			try {
 				enregistrer();
 			} catch (IOException e1) {
@@ -161,11 +161,6 @@ public class PostIt extends JDialog implements ActionListener, DocumentListener{
 			System.exit(-1);
 
 		}
-		//création du bouton d'enregistrement
-		bouton = new JButton("Enregistrer");
-		bouton.setContentAreaFilled(false);
-		bouton.setBorderPainted(false);
-		bouton.addActionListener(this);
 
 		//création du bouton de fermeture
 		boutonClose = new JButton("X");
@@ -197,7 +192,7 @@ public class PostIt extends JDialog implements ActionListener, DocumentListener{
 
 
 		//on déclare les differents JPanel;
-		north = new Panneau();
+		north = new JPanel();
 		east = new JPanel();
 		west = new JPanel();
 		south = new JPanel();
@@ -209,9 +204,13 @@ public class PostIt extends JDialog implements ActionListener, DocumentListener{
 		south.setBackground(jaune_texte);
 		textPane.setBackground(jaune_texte);
 
+		Handle handle = new Handle();
+		handle.setBackground(new Color(couleur + 0x60));
+		
 		//ajout du bouton dans le JPanel du nord
-		north.add(bouton);
-		north.add(boutonClose);
+		north.setLayout(new BorderLayout());
+		north.add(handle, BorderLayout.CENTER);
+		north.add(boutonClose, BorderLayout.EAST);
 
 
 		//ajout des JPanel dans le conteneur principal
@@ -385,10 +384,10 @@ public class PostIt extends JDialog implements ActionListener, DocumentListener{
 	}
 
 	//Création du type 'Panneau' enregistrant sa positon lorsqu'elle change
-	private class Panneau extends JPanel{
+	private class Handle extends JPanel{
 		Point p;    
 		MouseEvent sauvE;
-		public Panneau(){
+		public Handle(){
 			this.addMouseMotionListener(new MouseMotionAdapter(){
 				public void mouseDragged(MouseEvent e){
 					p = getLocationFrame();
@@ -407,6 +406,7 @@ public class PostIt extends JDialog implements ActionListener, DocumentListener{
 					x=(int)(p.getX()+(e.getX()-sauvE.getX()));
 					y=(int)(p.getY()+(e.getY()-sauvE.getY()));
 					setLocationFrame(x,y);
+					editOptionFile();
 				}
 			});
 
