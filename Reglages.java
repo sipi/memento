@@ -266,7 +266,7 @@ class Taille extends JPanel implements ActionListener{
 		//Boutons pour finir
 		hor3 = Box.createHorizontalBox();
 		hor3.add(ok);
-		hor3.add(Box.createHorizontalStrut(5));
+		hor3.add(Box.createHorizontalStrut(15));
 		hor3.add(annuler);
 
 		//Box servant à la mise en page des boutons
@@ -279,10 +279,12 @@ class Taille extends JPanel implements ActionListener{
 		global.add(hor1);
 		global.add(Box.createVerticalStrut(5));
 		global.add(hor2);
-		global.add(Box.createHorizontalStrut(5));
+		global.add(Box.createVerticalStrut(5));
 		global.add(hor4);
 
-		add(global);
+		setLayout(new GridBagLayout());
+		
+		add(global, new GridBagConstraints (0, 0, 1, 1, 0, 0, GridBagConstraints.CENTER, GridBagConstraints.CENTER, new Insets (0,0,0,0), 0, 0));
 	}
 	
 	//Renvoyer les valeurs saisies par l'utilisateur sous forme d'un tableau d'entiers  
