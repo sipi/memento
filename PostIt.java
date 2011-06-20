@@ -84,7 +84,7 @@ public class PostIt extends JDialog implements ActionListener, DocumentListener{
 		chemins();
 
 		//définition de la fenêtre
-		this.setTitle("Post-it");
+		this.setTitle("Memento");
 		this.setResizable(false);
 		this.setUndecorated(true);
 
@@ -92,7 +92,7 @@ public class PostIt extends JDialog implements ActionListener, DocumentListener{
 
 		//Création de l'icône de la SystemTray ainsi que des évènements associés
 		final TrayIcon trayIcon;
-		Image image = new ImageIcon(getClass().getResource("postit.png")).getImage();
+		Image image = new ImageIcon(getClass().getResource("img/icone.png")).getImage();
 
 		if (SystemTray.isSupported()) {
 
