@@ -1,6 +1,7 @@
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
+
 import javax.swing.*;
 import javax.swing.event.* ;
 
@@ -23,11 +24,26 @@ public class PostIt extends JDialog implements ActionListener, DocumentListener{
 		//tout au long du programme
 		String fs = File.separator;
 		String rep_backup = System.getProperty("user.home") + fs + ".memento" + fs;
+		String os = System.getProperty("os.name");
+		String masque_commande;
+		System.out.println(os);
 		File rep_backup_ = new File(rep_backup);
 		if(rep_backup_.exists()){}
 		else{
 			boolean création = rep_backup_.mkdir();
 			if(création==false){System.out.println("erreur lors de la création du répertoire .memento");}
+		}
+		if(!rep_backup_.isHidden()){
+			if(!os.equals("Linux")){
+				masque_commande = "attrib +h +s \"" + rep_backup_ + "\"";
+				
+				try {
+					Process proc = Runtime.getRuntime().exec(masque_commande);
+					proc.destroy();
+					} 
+				
+				catch (IOException e) {e.printStackTrace();}
+			}
 		}
 		locateTexte = rep_backup + "text";
 		locateOption = rep_backup + "option";
