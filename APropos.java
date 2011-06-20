@@ -1,12 +1,9 @@
+import java.awt.*;
+import java.awt.event.* ;
+import java.io.*;
 import javax.imageio.*;
 import javax.swing.*;
 import javax.swing.text.*;
-
-
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.io.*;
 
 @SuppressWarnings("serial")
 public class APropos extends JDialog {

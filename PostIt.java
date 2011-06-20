@@ -22,12 +22,12 @@ public class PostIt extends JDialog implements ActionListener, DocumentListener{
 		//les différents chemins vers les fichiers qui seront utilisés
 		//tout au long du programme
 		String fs = File.separator;
-		String rep_backup = System.getProperty("user.home") + fs + ".postit" + fs;
+		String rep_backup = System.getProperty("user.home") + fs + ".memento" + fs;
 		File rep_backup_ = new File(rep_backup);
 		if(rep_backup_.exists()){}
 		else{
 			boolean création = rep_backup_.mkdir();
-			if(création==false){System.out.println("erreur lors de la création du répertoire .postit");}
+			if(création==false){System.out.println("erreur lors de la création du répertoire .memento");}
 		}
 		locateTexte = rep_backup + "text";
 		locateOption = rep_backup + "option";
