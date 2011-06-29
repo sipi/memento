@@ -51,7 +51,7 @@ public class APropos extends JDialog {
 			
 		gbc.gridx = 0;
 		gbc.gridy = 0;
-		gbc.gridwidth 	= 1;
+		gbc.gridwidth = 1;
 		this.add(logo, gbc);
 		
 		gbc.gridx = 0;
@@ -91,10 +91,7 @@ public class APropos extends JDialog {
 		Image logo;
 		
 		public LogoComponent() {
-			try {
-			    logo = ImageIO.read(new File(getClass().getResource("img/logo.png").getPath()));
-			} catch (IOException e) {
-			}
+			logo= new ImageIcon(getClass().getResource("img/logo.png")).getImage();
 		}
 	
 		public void paint(Graphics g){
