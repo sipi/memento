@@ -8,14 +8,16 @@ import javax.swing.event.* ;
 @SuppressWarnings("serial")
 public class PostIt extends JDialog implements ActionListener, DocumentListener{
 
-	private JTextArea textPane; private JPanel north, east, west, south;
+	private static JTextArea textPane; private static JPanel north, east, west, south;
 	private JButton boutonClose;
 	private BufferedInputStream bis; private BufferedOutputStream bos;
 	private DataInputStream dis; private DataOutputStream dos;
 	private String s; private static String locateTexte, locateOption, locatePolice;
 	private APropos apropos;
 	private int x,y; public int hauteur, largeur;
-	private MenuItem aProposItem, reglagesItem, closetItem;
+	private MenuItem aProposItem, reglagesItem, closetItem, colorItem;
+	private static Handle handle;
+	private Color couleurCourante;
 
 	//Initialise les chemins utilisés par le programme
 	public static void chemins(){
@@ -63,6 +65,7 @@ public class PostIt extends JDialog implements ActionListener, DocumentListener{
 		if(e.getSource()==aProposItem){
 			apropos.setVisible(true);
 		}
+		
 		else if(e.getSource()==reglagesItem){
 			//On crée la boîte de dialogue gérant les réglages
 			Onglets ongl = new Onglets(textPane.getFont(), new int[]{hauteur, largeur});
@@ -82,9 +85,20 @@ public class PostIt extends JDialog implements ActionListener, DocumentListener{
 			//pas détruite
 			ongl.dispose();
 		}
+		
+		else if(e.getSource()==colorItem){
+			JColorChooser color_chooser = new JColorChooser();
+			color_chooser.setColor(couleurCourante);
+			JDialog dialog = JColorChooser.createDialog(null, "Sélectionnez une couleur", true, color_chooser, this, null);
+			dialog.setVisible(true);
+			couleurCourante = color_chooser.getColor();
+			coloriser(couleurCourante.getRGB());
+		}
+		
 		else if(e.getSource()==boutonClose){
 			setVisible(false);
 		}
+		
 		else if(e.getSource()==closetItem){
 			//On enregistre à la fermeture du programme
 			try {
@@ -98,6 +112,8 @@ public class PostIt extends JDialog implements ActionListener, DocumentListener{
 
 	public PostIt(int couleur){
 		chemins();
+		
+		this.couleurCourante = new Color(couleur);
 
 		//définition de la fenêtre
 		this.setTitle("Memento");
@@ -131,12 +147,15 @@ public class PostIt extends JDialog implements ActionListener, DocumentListener{
 			aProposItem = new MenuItem("A propos");
 			reglagesItem = new MenuItem("Réglages");
 			closetItem = new MenuItem("Quitter");
+			colorItem = new MenuItem("Couleur");
 
 			aProposItem.addActionListener(this);
 			reglagesItem.addActionListener(this);
 			closetItem.addActionListener(this);
+			colorItem.addActionListener(this);
 			popup.add(aProposItem);
 			popup.add(reglagesItem);
+			popup.add(colorItem);
 			popup.add(closetItem);
 
 			trayIcon = new TrayIcon(image, null , popup);
@@ -200,16 +219,10 @@ public class PostIt extends JDialog implements ActionListener, DocumentListener{
 		east = new JPanel();
 		west = new JPanel();
 		south = new JPanel();
-		Color jaune_texte = new Color(couleur);
-		Color jaune_haut = new Color(couleur + 0x60);
-		north.setBackground(jaune_haut);
-		east.setBackground(jaune_texte);
-		west.setBackground(jaune_texte);
-		south.setBackground(jaune_texte);
-		textPane.setBackground(jaune_texte);
 
-		Handle handle = new Handle();
-		handle.setBackground(new Color(couleur + 0x60));
+		handle = new Handle();
+		
+		coloriser(couleur);
 		
 		//ajout du bouton dans le JPanel du nord
 		north.setLayout(new BorderLayout());
@@ -226,8 +239,19 @@ public class PostIt extends JDialog implements ActionListener, DocumentListener{
 		c.add(textPane, BorderLayout.CENTER);
 
 		readOptionFile();
-		this.textPane.setText(this.lireText());
+		textPane.setText(this.lireText());
 		this.setVisible(true);
+	}
+	
+	private static void coloriser(int couleur_base){
+		Color normal = new Color(couleur_base);
+		Color haut = new Color(couleur_base+0x60);
+		north.setBackground(haut);
+		east.setBackground(normal);
+		west.setBackground(normal);
+		south.setBackground(normal);
+		textPane.setBackground(normal);
+		handle.setBackground(haut);
 	}
 
 	/********************************************
