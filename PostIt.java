@@ -15,9 +15,9 @@ public class PostIt extends JDialog implements ActionListener, DocumentListener{
 	private String s; private static String locateTexte, locateOption, locatePolice;
 	private APropos apropos;
 	private int x,y; public int hauteur, largeur;
-	private MenuItem aProposItem, reglagesItem, closetItem, colorItem;
+	private MenuItem aProposItem, reglagesItem, closetItem;
 	private static Handle handle;
-	private static Color couleurCourante;
+	private static Color couleurFond, couleurTexte;
 
 	//Initialise les chemins utilisés par le programme
 	public static void chemins(){
@@ -68,13 +68,17 @@ public class PostIt extends JDialog implements ActionListener, DocumentListener{
 		
 		else if(e.getSource()==reglagesItem){
 			//On crée la boîte de dialogue gérant les réglages
-			Onglets ongl = new Onglets(textPane.getFont(), new int[]{hauteur, largeur});
+			Onglets ongl = new Onglets(textPane.getFont(), new int[]{hauteur, largeur}, textPane);
 			//On utilise les différents getter pour obtenir les valeurs
 			//sélectionnées par l'utilisateur
 			Font f = ongl.fontGetter();
 			int[] i = ongl.sizeGetter();
 			hauteur = i[0];
 			largeur = i[1];
+			Color[] c = ongl.colorGetter();
+			couleurFond = c[0];
+			couleurTexte = c[1];
+			coloriser();
 			//On applique les changements
 			textPane.setFont(f);
 			setSize(largeur, hauteur);
@@ -84,16 +88,6 @@ public class PostIt extends JDialog implements ActionListener, DocumentListener{
 			//Libérer les ressources car la boîte de dialogue a juste été cachée, 
 			//pas détruite
 			ongl.dispose();
-		}
-		
-		else if(e.getSource()==colorItem){
-			JColorChooser color_chooser = new JColorChooser();
-			color_chooser.setColor(couleurCourante);
-			JDialog dialog = JColorChooser.createDialog(null, "Sélectionnez une couleur", true, color_chooser, this, null);
-			dialog.setVisible(true);
-			couleurCourante = color_chooser.getColor();
-			coloriser();
-			editOptionFile();
 		}
 		
 		else if(e.getSource()==boutonClose){
@@ -114,7 +108,7 @@ public class PostIt extends JDialog implements ActionListener, DocumentListener{
 	public PostIt(int couleur){
 		chemins();
 		
-		couleurCourante = new Color(couleur);
+		couleurFond = new Color(couleur);
 
 		//définition de la fenêtre
 		this.setTitle("Memento");
@@ -148,15 +142,12 @@ public class PostIt extends JDialog implements ActionListener, DocumentListener{
 			aProposItem = new MenuItem("A propos");
 			reglagesItem = new MenuItem("Réglages");
 			closetItem = new MenuItem("Quitter");
-			colorItem = new MenuItem("Couleur");
 
 			aProposItem.addActionListener(this);
 			reglagesItem.addActionListener(this);
 			closetItem.addActionListener(this);
-			colorItem.addActionListener(this);
 			popup.add(aProposItem);
 			popup.add(reglagesItem);
-			popup.add(colorItem);
 			popup.add(closetItem);
 
 			trayIcon = new TrayIcon(image, null , popup);
@@ -244,7 +235,7 @@ public class PostIt extends JDialog implements ActionListener, DocumentListener{
 	}
 	
 	private static void coloriser(){
-		Color normal = couleurCourante;
+		Color normal = couleurFond;
 		Color haut = new Color(Integer.parseInt(Integer.toHexString(normal.getRGB()).substring(2), 16)+0x60);
 		String a = String.valueOf(Integer.toHexString(normal.getRGB())).substring(2);
 		String b = String.valueOf(Integer.toHexString(haut.getRGB())).substring(2);
@@ -256,6 +247,8 @@ public class PostIt extends JDialog implements ActionListener, DocumentListener{
 		south.setBackground(normal);
 		textPane.setBackground(normal);
 		handle.setBackground(haut);
+		
+		textPane.setForeground(couleurTexte);
 	}
 
 	/********************************************
@@ -372,7 +365,8 @@ public class PostIt extends JDialog implements ActionListener, DocumentListener{
 			y = dis.readInt();
 			hauteur = dis.readInt();
 			largeur = dis.readInt();
-			couleurCourante = new Color(dis.readInt());
+			couleurFond = new Color(dis.readInt());
+			couleurTexte = new Color(dis.readInt());
 			dis.close();
 			System.out.println("Lecture backup effectuée");
 
@@ -394,7 +388,8 @@ public class PostIt extends JDialog implements ActionListener, DocumentListener{
 			dos.writeInt(y);
 			dos.writeInt(hauteur);
 			dos.writeInt(largeur);
-			dos.writeInt(Integer.parseInt(Integer.toHexString(couleurCourante.getRGB()).substring(2), 16));
+			dos.writeInt(Integer.parseInt(Integer.toHexString(couleurFond.getRGB()).substring(2), 16));
+			dos.writeInt(Integer.parseInt(Integer.toHexString(couleurTexte.getRGB()).substring(2), 16));
 			dos.close();
 			System.out.println("Sauvegarde effectuée");
 

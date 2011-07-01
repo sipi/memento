@@ -9,17 +9,20 @@ import javax.swing.event.* ;
 
 @SuppressWarnings("serial")
 class Onglets extends JDialog{
-	public Onglets(final Font f, int[] tail){
+	public Onglets(final Font f, int[] tail, JTextArea cible){
 		//Créer la boîte
 		super((JFrame)null, "Réglages", true);
 		//Créer les onglets
 		onglets = new JTabbedPane(SwingConstants.TOP);
 		polices = new Polices(f, this);
 		taille = new Taille(tail[0], tail[1], this);
+		couleur = new Couleur(cible, this);
 		scroll_police = new JScrollPane(polices);
 		scroll_size = new JScrollPane(taille);
+		scroll_couleur = new JScrollPane(couleur);
 		onglets.addTab("Choix de la police", scroll_police);
 		onglets.addTab("Dimensions", scroll_size);
+		onglets.addTab("Couleurs", couleur);
 		add(onglets);
 		//Modifier le comportement pour que la fermeture de la boîte aie le même résultat
 		//qu'un clic sur 'Annuler'
@@ -33,24 +36,28 @@ class Onglets extends JDialog{
 		setLocationRelativeTo(null);
 		setVisible(true);
 	}
-	
+
 	//Récupérer la taille demandée
 	public int[] sizeGetter(){
-		int[] resultat = taille.getter();
-		return resultat;
+		return taille.getter();
 	}
-	
+
 	//Récupérer la fonte demandée
 	public Font fontGetter(){
 		return polices.getter();
 	}
-	JTabbedPane onglets; Dimension dims; JScrollPane scroll_police, scroll_size; static Polices polices;
-	Taille taille;
-
-/*====================================================================================
- *                    Création du panneau gérant la police
- *====================================================================================*/
 	
+	//Récupérer les couleurs demandées
+	public Color[] colorGetter(){
+		return couleur.getter();
+	}
+	JTabbedPane onglets; Dimension dims; JScrollPane scroll_police, scroll_size, scroll_couleur; static Polices polices;
+	Taille taille; Couleur couleur;
+
+	/*====================================================================================
+	 *                    Création du panneau gérant la police
+	 *====================================================================================*/
+
 	class Polices extends JPanel implements ActionListener{
 		public Polices(Font f, JDialog appel){
 			//Permet d'utiliser f et appel en dehors du constructeur
@@ -73,7 +80,7 @@ class Onglets extends JDialog{
 			//Création des boutons pour finir
 			annuler = new JButton("Annuler");
 			annuler.addActionListener(this);
-			ok = new JButton("OK");
+			ok = new JButton("Valider");
 			ok.addActionListener(this);
 
 			//Box contenant les boutons
@@ -83,7 +90,7 @@ class Onglets extends JDialog{
 			prov_valid.add(ok);
 
 			entier = Box.createVerticalBox();
-			
+
 			//Box gérant la mise en page des boutons
 			valid = Box.createHorizontalBox();
 			valid.add(Box.createGlue());
@@ -107,7 +114,7 @@ class Onglets extends JDialog{
 			//Remplissage des valeurs par défauts et affichage de l'exemple
 			setter(f);
 			exemple();
-			
+
 			//Écouter le champ de texte de saisie de la taille afin que les modifications
 			//soient répercutées lorsque son contenu change
 			size.resultat.addActionListener(this);
@@ -250,7 +257,7 @@ class Taille extends JPanel implements ActionListener{
 		annuler.addActionListener(this);
 
 		//Création et remplissage des box
-		
+
 		//Choix de la hauteur
 		hor1 = Box.createHorizontalBox();
 		hor1.add(haut_label);
@@ -283,10 +290,10 @@ class Taille extends JPanel implements ActionListener{
 		global.add(hor4);
 
 		setLayout(new GridBagLayout());
-		
+
 		add(global, new GridBagConstraints (0, 0, 1, 1, 0, 0, GridBagConstraints.CENTER, GridBagConstraints.CENTER, new Insets (0,0,0,0), 0, 0));
 	}
-	
+
 	//Renvoyer les valeurs saisies par l'utilisateur sous forme d'un tableau d'entiers  
 	public int[] getter(){
 		int[] resultat = new int[2];
@@ -307,4 +314,114 @@ class Taille extends JPanel implements ActionListener{
 	}
 	JLabel haut_label, larg_label; JTextField hauteur, largeur; JButton ok, annuler;
 	JDialog arg0; int haut, larg; Box global, hor1, hor2, hor3, hor4;
+}
+
+/*====================================================================================
+ *                    Création du panneau gérant la couleur
+ *====================================================================================*/
+@SuppressWarnings("serial")
+class Couleur extends JPanel implements ActionListener{
+	public Couleur(JTextArea cible, JDialog appel){
+		arg0 = appel;
+		texteCible = cible;
+		
+		fondCourant = cible.getBackground();
+		policeCourant = cible.getForeground();
+		
+		if(fondCourant==null){
+			fondCourant = new Color(0xffff00);
+		}
+		if(policeCourant==null){
+			policeCourant = Color.black;
+		}
+		
+		JLabel fond = new JLabel("Couleur de fond :");
+		JLabel texte = new JLabel("Couleur de police :");
+		couleurFond = new JButton("                      ");
+		couleurTexte = new JButton("                         ");
+		ok = new JButton("Valider");
+		annuler = new JButton("Annuler");
+		exemple = new JTextArea("Aperçu du résultat avec ces couleurs");
+		exemple.setFont(cible.getFont());
+		
+		couleurFond.addActionListener(this);
+		couleurTexte.addActionListener(this);
+		ok.addActionListener(this);
+		annuler.addActionListener(this);
+		
+		setter();
+		
+		Box back = Box.createVerticalBox();
+		Box police = Box.createVerticalBox();
+		Box choix = Box.createHorizontalBox();
+		Box boutons = Box.createHorizontalBox();
+		Box align_boutons = Box.createHorizontalBox();
+		Box global = Box.createVerticalBox();
+		back.add(fond);
+		back.add(Box.createVerticalStrut(5));
+		back.add(couleurFond);
+		police.add(texte);
+		police.add(Box.createVerticalStrut(5));
+		police.add(couleurTexte);
+		choix.add(back);
+		choix.add(Box.createHorizontalStrut(50));
+		choix.add(police);
+		boutons.add(ok);
+		boutons.add(Box.createHorizontalStrut(10));
+		boutons.add(annuler);
+		align_boutons.add(Box.createHorizontalGlue());
+		align_boutons.add(boutons);
+		global.add(choix);
+		global.add(Box.createVerticalStrut(10));
+		global.add(exemple);
+		global.add(Box.createVerticalStrut(30));
+		global.add(align_boutons);
+		
+		add(global);
+	}
+
+	public static void setter(){
+		couleurFond.setBackground(fondCourant);
+		couleurTexte.setBackground(policeCourant);
+		exemple.setBackground(fondCourant);
+		exemple.setForeground(policeCourant);
+	}
+
+	public Color[] getter(){
+		return new Color[]{fondCourant, policeCourant};
+	}
+
+	public Color lancerChoix(Color base){
+		Color resultat;
+		JColorChooser color_chooser = new JColorChooser();
+		color_chooser.setColor(base);
+		JDialog dialog = JColorChooser.createDialog(null, "Sélectionnez une couleur", true, color_chooser, null, null);
+		dialog.setVisible(true);
+		resultat = color_chooser.getColor();
+		return resultat;
+	}
+
+	public void actionPerformed(ActionEvent e){
+		if(e.getSource()==couleurFond){
+			fondCourant = lancerChoix(fondCourant);
+			setter();
+		}
+		else if(e.getSource()==couleurTexte){
+			policeCourant = lancerChoix(policeCourant);
+			setter();
+		}
+		else if(e.getSource()==ok){
+			//Masquer la boîte
+			arg0.setVisible(false);
+		}
+		else if(e.getSource()==annuler){
+			//Remettre les valeurs de départ puis masquer la boîte
+			fondCourant = texteCible.getBackground();
+			policeCourant = texteCible.getForeground();
+			arg0.setVisible(false);
+		}
+	}
+
+	static JButton couleurFond, couleurTexte, ok, annuler; static JTextArea exemple, texteCible; 
+	JLabel fond, texte;	static Color fondCourant, policeCourant; JDialog arg0;
 }
