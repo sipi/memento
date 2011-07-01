@@ -17,7 +17,7 @@ public class PostIt extends JDialog implements ActionListener, DocumentListener{
 	private int x,y; public int hauteur, largeur;
 	private MenuItem aProposItem, reglagesItem, closetItem, colorItem;
 	private static Handle handle;
-	private Color couleurCourante;
+	private static Color couleurCourante;
 
 	//Initialise les chemins utilisés par le programme
 	public static void chemins(){
@@ -92,7 +92,8 @@ public class PostIt extends JDialog implements ActionListener, DocumentListener{
 			JDialog dialog = JColorChooser.createDialog(null, "Sélectionnez une couleur", true, color_chooser, this, null);
 			dialog.setVisible(true);
 			couleurCourante = color_chooser.getColor();
-			coloriser(couleurCourante.getRGB());
+			coloriser();
+			editOptionFile();
 		}
 		
 		else if(e.getSource()==boutonClose){
@@ -113,7 +114,7 @@ public class PostIt extends JDialog implements ActionListener, DocumentListener{
 	public PostIt(int couleur){
 		chemins();
 		
-		this.couleurCourante = new Color(couleur);
+		couleurCourante = new Color(couleur);
 
 		//définition de la fenêtre
 		this.setTitle("Memento");
@@ -222,8 +223,6 @@ public class PostIt extends JDialog implements ActionListener, DocumentListener{
 
 		handle = new Handle();
 		
-		coloriser(couleur);
-		
 		//ajout du bouton dans le JPanel du nord
 		north.setLayout(new BorderLayout());
 		north.add(handle, BorderLayout.CENTER);
@@ -239,13 +238,18 @@ public class PostIt extends JDialog implements ActionListener, DocumentListener{
 		c.add(textPane, BorderLayout.CENTER);
 
 		readOptionFile();
+		coloriser();
 		textPane.setText(this.lireText());
 		this.setVisible(true);
 	}
 	
-	private static void coloriser(int couleur_base){
-		Color normal = new Color(couleur_base);
-		Color haut = new Color(couleur_base+0x60);
+	private static void coloriser(){
+		Color normal = couleurCourante;
+		Color haut = new Color(Integer.parseInt(Integer.toHexString(normal.getRGB()).substring(2), 16)+0x60);
+		String a = String.valueOf(Integer.toHexString(normal.getRGB())).substring(2);
+		String b = String.valueOf(Integer.toHexString(haut.getRGB())).substring(2);
+		System.out.println("couleur base  : " + a);
+		System.out.println("couleur haute : " + b);
 		north.setBackground(haut);
 		east.setBackground(normal);
 		west.setBackground(normal);
@@ -368,7 +372,9 @@ public class PostIt extends JDialog implements ActionListener, DocumentListener{
 			y = dis.readInt();
 			hauteur = dis.readInt();
 			largeur = dis.readInt();
+			couleurCourante = new Color(dis.readInt());
 			dis.close();
+			System.out.println("Lecture backup effectuée");
 
 		} catch (IOException e) {
 			System.out.println("erreur");
@@ -388,7 +394,9 @@ public class PostIt extends JDialog implements ActionListener, DocumentListener{
 			dos.writeInt(y);
 			dos.writeInt(hauteur);
 			dos.writeInt(largeur);
+			dos.writeInt(Integer.parseInt(Integer.toHexString(couleurCourante.getRGB()).substring(2), 16));
 			dos.close();
+			System.out.println("Sauvegarde effectuée");
 
 		} catch (FileNotFoundException ex) {
 			ex.printStackTrace();
