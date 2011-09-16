@@ -6,7 +6,7 @@ import javax.swing.*;
 import javax.swing.event.* ;
 
 @SuppressWarnings("serial")
-public class PostIt extends JDialog implements ActionListener, DocumentListener{
+public class Memento extends JDialog implements ActionListener, DocumentListener{
 
 	private static JTextArea textPane; private static JPanel north, east, west, south;
 	private JButton boutonClose;
@@ -105,7 +105,7 @@ public class PostIt extends JDialog implements ActionListener, DocumentListener{
 		}
 	}
 
-	public PostIt(int couleur){
+	public Memento(int couleur){
 		chemins();
 		
 		couleurFond = new Color(couleur);
@@ -444,6 +444,6 @@ public class PostIt extends JDialog implements ActionListener, DocumentListener{
 	}
 
 	public static void main(String[] args){
-		new PostIt(0xffff00);
+		new Memento(0xffff00);
 	}
 }

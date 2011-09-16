@@ -9,9 +9,9 @@ public class APropos extends JDialog {
 
 	
 	//Créer la boîte de dialogue "A propos"
-	public APropos(PostIt p) {
+	public APropos(Memento p) {
 		initComponents();
-		this.postit = p;
+		this.memento = p;
 		//Définir l'apparence et l'emplacement
 		this.setTitle("À propos de Memento");
 		this.setIconImage(new ImageIcon(getClass().getResource("img/icone.png")).getImage());
@@ -77,7 +77,7 @@ public class APropos extends JDialog {
 	private JTextArea text;
 	private JButton button_licence, button_close;
 	private LogoComponent logo;
-	private PostIt postit;
+	private Memento memento;
 
 	
 	/* **********************************************************************************
@@ -139,7 +139,7 @@ public class APropos extends JDialog {
 
 			Dimension dimension = new Dimension(600, 400);
 			
-			JDialog licence = new JDialog(postit, "Licence");
+			JDialog licence = new JDialog(memento, "Licence");
 
 			JTextPane text_pane = new JTextPane();
 			text_pane.setEditable(false);
@@ -184,7 +184,7 @@ public class APropos extends JDialog {
 			licence.add(pan);
 			
 			licence.pack();
-			licence.setLocationRelativeTo(postit);
+			licence.setLocationRelativeTo(memento);
 			licence.setVisible(true);
 			
 			
