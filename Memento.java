@@ -232,7 +232,7 @@ public class Memento extends JDialog implements ActionListener, DocumentListener
 		west = new JPanel();
 		south = new JPanel();
 
-		handle = new Handle();
+		handle = new Handle(this);
 		
 		//ajout du bouton dans le JPanel du nord
 		north.setLayout(new BorderLayout());
@@ -424,44 +424,7 @@ public class Memento extends JDialog implements ActionListener, DocumentListener
 	//****************************************************************
 
 
-
-	public void setLocationFrame(int x, int y){
-		this.setLocation(x,y);
-	}
-
-	public Point getLocationFrame(){
-		return this.getLocation();
-	}
-
-	//Création du type 'Panneau' enregistrant sa positon lorsqu'elle change
-	private class Handle extends JPanel{
-		Point p;    
-		MouseEvent sauvE;
-		public Handle(){
-			this.addMouseMotionListener(new MouseMotionAdapter(){
-				public void mouseDragged(MouseEvent e){
-					p = getLocationFrame();
-					x=(int)(p.getX()+(e.getX()-sauvE.getX()));
-					y=(int)(p.getY()+(e.getY()-sauvE.getY()));
-					setLocationFrame(x,y);
-				}
-			});
-
-			this.addMouseListener(new MouseAdapter(){
-				public void mousePressed(MouseEvent e){
-					p=getLocationFrame();
-					sauvE = e;
-				}
-				public void mouseReleased(MouseEvent e){
-					x=(int)(p.getX()+(e.getX()-sauvE.getX()));
-					y=(int)(p.getY()+(e.getY()-sauvE.getY()));
-					setLocationFrame(x,y);
-					editOptionFile();
-				}
-			});
-
-		}
-	}
+	
 
 	public static void main(String[] args){
 		new Memento(0xffff00);
