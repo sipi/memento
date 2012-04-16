@@ -1,8 +1,6 @@
-import java.awt.*;
-
 /*  
- *  Copyright © 2008-2011 Sipieter Clément <c.sipieter@gmail.com>
- *  Copyright © 2011 Sellem Lev-Arcady
+ *  Copyright © 2008-2012 Sipieter Clément <c.sipieter@gmail.com>
+ *  Copyright © 2011-2012 Sellem Lev-Arcady
  *
  *  This file is part of Memento.
  *
@@ -19,11 +17,12 @@ import java.awt.*;
  *  You should have received a copy of the GNU General Public License
  *  along with Memento.  If not, see <http://www.gnu.org/licenses/>.
  */
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+
+import java.awt.*;
+import java.awt.event.*;
 import java.util.Timer;
 import java.util.TimerTask;
-import javax.swing.JPanel;
+import javax.swing.*;
 
 @SuppressWarnings("serial")
 public class Handle extends JPanel{
@@ -79,6 +78,7 @@ public class Handle extends JPanel{
         
         Memento memento;
         Point old_mouse_position, window_position;
+        int x, y;
         
         HandleController(Memento m, Point old_mouse_position){
             this.memento = m;
@@ -88,11 +88,11 @@ public class Handle extends JPanel{
 
         @Override
         public void run() {
-            this.memento.setLocation(
-                    (int)(this.window_position.getX() + MouseInfo.getPointerInfo().getLocation().getX() - this.old_mouse_position.getX()),
-                    (int)(this.window_position.getY() + MouseInfo.getPointerInfo().getLocation().getY() - this.old_mouse_position.getY())
-            );
-           
+        	x = (int)(this.window_position.getX() + MouseInfo.getPointerInfo().getLocation().getX() - this.old_mouse_position.getX());
+        	y = (int)(this.window_position.getY() + MouseInfo.getPointerInfo().getLocation().getY() - this.old_mouse_position.getY());
+            this.memento.setLocation(x, y);
+            this.memento.x = this.x;
+            this.memento.y = this.y;
         }
     }
 }

@@ -1,6 +1,6 @@
 /*  
- *  Copyright © 2008-2011 Sipieter Clément <c.sipieter@gmail.com>
- *  Copyright © 2011 Sellem Lev-Arcady
+ *  Copyright © 2008-2012 Sipieter Clément <c.sipieter@gmail.com>
+ *  Copyright © 2011-2012 Sellem Lev-Arcady
  *
  *  This file is part of Memento.
  *

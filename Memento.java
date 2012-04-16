@@ -1,6 +1,6 @@
 /*  
- *  Copyright © 2008-2011 Sipieter Clément <c.sipieter@gmail.com>
- *  Copyright © 2011 Sellem Lev-Arcady
+ *  Copyright © 2008-2012 Sipieter Clément <c.sipieter@gmail.com>
+ *  Copyright © 2011-2012 Sellem Lev-Arcady
  *
  *  This file is part of Memento.
  *
@@ -34,7 +34,8 @@ public class Memento extends JDialog implements ActionListener, DocumentListener
 	private DataInputStream dis; private DataOutputStream dos;
 	private String s; private static String locateTexte, locateOption, locatePolice;
 	private APropos apropos;
-	private int x,y; public int hauteur, largeur;
+	int x, y;
+	public int hauteur, largeur;
 	private MenuItem aProposItem, reglagesItem, closetItem;
 	private static Handle handle;
 	private static Color couleurFond, couleurTexte;
@@ -411,7 +412,7 @@ public class Memento extends JDialog implements ActionListener, DocumentListener
 			dos.writeInt(Integer.parseInt(Integer.toHexString(couleurFond.getRGB()).substring(2), 16));
 			dos.writeInt(Integer.parseInt(Integer.toHexString(couleurTexte.getRGB()).substring(2), 16));
 			dos.close();
-			System.out.println("Sauvegarde effectuée");
+			System.out.println("Sauvegarde effectuée, x="+x+"  y="+y);
 
 		} catch (FileNotFoundException ex) {
 			ex.printStackTrace();
