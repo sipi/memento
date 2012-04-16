@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=Application
+Encoding=UTF-8
+Name=Memento
+GenericName=Memento
+Comment=Desktop reminder
+Comment[fr]=Aide-mémoire de bureau
+Icon=memento
+Exec=memento
+Terminal=false
+StartupNotify=false
+Categories=Utility;

@@ -1,0 +1,6 @@
+#!/bin/sh
+rm /bin/memento
+rm /usr/share/applications/memento.desktop
+rm /usr/share/pixmaps/memento.png
+rm -rf /usr/share/doc/memento
+rm -rf /usr/lib/memento

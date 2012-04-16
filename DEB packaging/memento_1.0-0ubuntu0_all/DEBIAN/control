@@ -1,0 +1,11 @@
+Package: memento
+Version: 1.0
+Section: utils
+Priority: optional
+Architecture: all
+Depends:
+Installed-Size: 320
+Maintainer: Lev-Arcady Sellem <levgrec@gmail.com>
+Description: Aide-mémoire de bureau.
+ Memento est un petit aide-mémoire codé en Java que l'on peut afficher/masquer en cliquant sur son icône dans la zone de notification.
+ Memento is a slight reminder, coded in Java, shown/masqued by a click on its icon in the system tray.
