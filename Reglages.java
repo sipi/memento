@@ -215,7 +215,7 @@ class Vertical extends Box implements ListSelectionListener{
 		super(1);
 		resultat = new JTextField();
 		resultat.setEditable(edition);
-		choix = new JList(contenu);
+		choix = new JList<String>(contenu);
 		choix.setSelectionMode(0);
 		choix.setVisibleRowCount(10);
 		choix.addListSelectionListener(this);
@@ -235,7 +235,7 @@ class Vertical extends Box implements ListSelectionListener{
 		}
 	}
 
-	JTextField resultat; JList choix; JScrollPane defil;
+	JTextField resultat; JList<String> choix; JScrollPane defil;
 }
 
 /*====================================================================================

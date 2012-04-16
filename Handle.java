@@ -1,6 +1,4 @@
-
-import java.awt.MouseInfo;
-import java.awt.Point;
+import java.awt.*;
 
 /*  
  *  Copyright © 2008-2011 Sipieter Clément <c.sipieter@gmail.com>
@@ -27,6 +25,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 import javax.swing.JPanel;
 
+@SuppressWarnings("serial")
 public class Handle extends JPanel{
     
     /**
