@@ -55,8 +55,8 @@ public class APropos extends JDialog {
 		
 		text.setText("Version : 1.0b \n" +
 				"\n" +
-				"Copyright © 2008-2011 Sipieter Clément \n" +
-				"Copyright © 2011 Sellem Lev-Arcady"
+				"Copyright © 2008-2012 Sipieter Clément \n" +
+				"Copyright © 2011-2012 Sellem Lev-Arcady"
 				);
 		text.setBackground(this.getBackground());
 		
