@@ -21,20 +21,28 @@
 import java.awt.* ;
 import java.awt.event.* ;
 import javax.swing.* ;
-import javax.swing.event.* ;
 
 /*====================================================================================
  *                    Création de la boîte de dialogue
  *====================================================================================*/
 
+/**
+ * Boîte de dialogue proposant de définir la taille du mémo et la police de caractères utilisée
+ */
 @SuppressWarnings("serial")
 class Onglets extends JDialog{
+	/**
+	 * Constructeur de la classe Onglets
+	 * @param f La police de caractères courante
+	 * @param tail La taille courante
+	 * @param cible L'aire de texte du mémo appelant
+	 */
 	public Onglets(final Font f, int[] tail, JTextArea cible){
 		//Créer la boîte
 		super((JFrame)null, "Réglages", true);
 		//Créer les onglets
 		onglets = new JTabbedPane(SwingConstants.TOP);
-		polices = new Polices(f, this);
+		polices = new FontChooser(f, this);
 		taille = new Taille(tail[0], tail[1], this);
 		couleur = new Couleur(cible, this);
 		scroll_police = new JScrollPane(polices);
@@ -42,7 +50,7 @@ class Onglets extends JDialog{
 		scroll_couleur = new JScrollPane(couleur);
 		onglets.addTab("Choix de la police", scroll_police);
 		onglets.addTab("Dimensions", scroll_size);
-		onglets.addTab("Couleurs", couleur);
+		onglets.addTab("Couleurs", scroll_couleur);
 		add(onglets);
 		//Modifier le comportement pour que la fermeture de la boîte aie le même résultat
 		//qu'un clic sur 'Annuler'
@@ -57,198 +65,48 @@ class Onglets extends JDialog{
 		setVisible(true);
 	}
 
-	//Récupérer la taille demandée
+	/**
+	 * Récupération des dimensions spécifiées par l'utilisateur
+	 * @return Un tableau contenant la taille du mémo
+	 */
 	public int[] sizeGetter(){
 		return taille.getter();
 	}
 
-	//Récupérer la fonte demandée
+	/**
+	 * Récupération de la fonte spécifiée par l'utilisateur
+	 * @return Un objet Font contenant les choix de l'utilisateur
+	 */
 	public Font fontGetter(){
-		return polices.getter();
+		return polices.getFont();
 	}
 	
-	//Récupérer les couleurs demandées
+	/**
+	 * Récupération des couleurs spécifiées par l'utilisateur
+	 * @return Un tableau contenant les choix de l'utilisateur
+	 */
 	public Color[] colorGetter(){
 		return couleur.getter();
 	}
-	JTabbedPane onglets; Dimension dims; JScrollPane scroll_police, scroll_size, scroll_couleur; static Polices polices;
-	Taille taille; Couleur couleur;
-
-	/*====================================================================================
-	 *                    Création du panneau gérant la police
-	 *====================================================================================*/
-
-	class Polices extends JPanel implements ActionListener{
-		public Polices(Font f, JDialog appel){
-			//Permet d'utiliser f et appel en dehors du constructeur
-			arg0 = f;
-			arg1 = appel;
-
-			//Création du champ exemple et de tableaux contenant le choix proposé
-			exemple = new JTextField("Voix ambiguë d'un coeur qui, au zéphyr, préfère les jattes de kiwis", 24);
-			exemple.setEditable(false);
-
-			tailles = new String[]{"6","8","10","11","12","14","16","18","20","22","24","26","28","30","32","34","36","40","44","48"};
-			styles = new String[]{"Normal", "Gras", "Italique", "Gras et Italique"};
-			polices = GraphicsEnvironment.getLocalGraphicsEnvironment().getAvailableFontFamilyNames();
-
-			//Création des box JTextField + JList permettant de choisir
-			fonte = new Vertical(0, polices, false);
-			style = new Vertical(0, styles, false);
-			size = new Vertical(0, tailles, true);
-
-			//Création des boutons pour finir
-			annuler = new JButton("Annuler");
-			annuler.addActionListener(this);
-			ok = new JButton("Valider");
-			ok.addActionListener(this);
-
-			//Box contenant les boutons
-			prov_valid = Box.createHorizontalBox();
-			prov_valid.add(annuler);
-			prov_valid.add(Box.createHorizontalStrut(5));
-			prov_valid.add(ok);
-
-			entier = Box.createVerticalBox();
-
-			//Box gérant la mise en page des boutons
-			valid = Box.createHorizontalBox();
-			valid.add(Box.createGlue());
-			valid.add(prov_valid);
-
-			//Box gérant la mise en page des listes de choix
-			settings = Box.createHorizontalBox();
-			settings.add(fonte);
-			settings.add(Box.createHorizontalStrut(5));
-			settings.add(style);
-			settings.add(Box.createHorizontalStrut(5));
-			settings.add(size);
-
-			//Box contenant l'intégralité des composants
-			entier.add(settings);
-			entier.add(Box.createVerticalStrut(5));
-			entier.add(exemple);
-			entier.add(Box.createVerticalStrut(5));
-			entier.add(valid);
-
-			//Remplissage des valeurs par défauts et affichage de l'exemple
-			setter(f);
-			exemple();
-
-			//Écouter le champ de texte de saisie de la taille afin que les modifications
-			//soient répercutées lorsque son contenu change
-			size.resultat.addActionListener(this);
-
-			//Ajout du résultat au panneau
-			add(entier);
-		}
-
-		//Remplir les JTextField de résultat avec les valeurs par défaut transmises
-		//sous forme d'objet 'Font'
-		public void setter(Font f){
-			fonte.resultat.setText(f.getName());
-			size.resultat.setText(String.valueOf(f.getSize()));
-			int prov = f.getStyle();
-			String prov2 = "";
-			if(prov==Font.PLAIN){prov2 = "Normal";}
-			else if(prov==Font.BOLD){prov2 = "Gras";}
-			else if(prov==Font.ITALIC){prov2 = "Italique";}
-			else if(prov==Font.BOLD+Font.ITALIC){prov2 = "Gras et Italique";}
-			style.resultat.setText(prov2);
-		}
-
-		//Retourner les valeurs saisies par l'utilisateur sous forme d'objet 'Font'
-		public Font getter(){
-			String prov = style.resultat.getText();
-			if(prov.equals("Normal")){
-				styl = Font.PLAIN;
-			}
-			else if(prov.equals("Gras")){
-				styl = Font.BOLD;
-			}
-			else if(prov.equals("Italique")){
-				styl = Font.ITALIC;
-			}
-			else if(prov.equals("Gras et Italique")){
-				styl = Font.BOLD+Font.ITALIC;
-			}
-			font = new Font(fonte.resultat.getText(), styl, Integer.parseInt(size.resultat.getText()));
-			return font;
-		}
-
-		//Afficher un exemple pour les valeurs sélectionnées
-		public void exemple(){
-			exemple.setFont(getter());
-		}
-
-		public void actionPerformed(ActionEvent e){
-			if(e.getSource()==ok){
-				//Faire disparaître la boîte de dialogue sans la détruire
-				//pour pouvoir continuer à utiliser getter() de l'extérieur
-				arg1.setVisible(false);
-			}
-			else if(e.getSource()==annuler){
-				//Remettre les valeurs de départ puis
-				//faire disparaître la boîte de dialogue sans la détruire
-				//pour pouvoir continuer à utiliser getter() de l'extérieur
-				setter(arg0);
-				arg1.setVisible(false);
-			}
-			else if(e.getSource()==size.resultat){
-				//Mettre à jour l'exemple quand l'utilisateur entre une taille
-				exemple();
-			}
-		}
-
-		String [] tailles, polices, styles; Box settings, entier, valid, prov_valid; Vertical fonte, style, size;
-		Font font; int styl; JTextField exemple; JButton ok, annuler; Font arg0; JDialog arg1;
-	}
+	private JTabbedPane onglets; private JScrollPane scroll_police, scroll_size, scroll_couleur;
+	private FontChooser polices; private Taille taille; private Couleur couleur;
+	
 }
 
-/*=======================================================================================
- *        Type créant un ensemble JTextField + JList servant au choix
- *=======================================================================================*/
-@SuppressWarnings("serial")
-class Vertical extends Box implements ListSelectionListener{
-	//Créer un Box vertical contenant le champ de texte et la liste
-	public Vertical(int i, String[] contenu, boolean edition){
-		super(1);
-		resultat = new JTextField();
-		resultat.setEditable(edition);
-		choix = new JList<String>(contenu);
-		choix.setSelectionMode(0);
-		choix.setVisibleRowCount(10);
-		choix.addListSelectionListener(this);
-		defil = new JScrollPane(choix);
 
-		//Ajouter les composants au Box
-		add(resultat);
-		add(Box.createVerticalStrut(3));
-		add(defil);
-	}
-
-	//Remplir le champ de texte avec la valeur sélectionnée dans la liste
-	public void valueChanged(ListSelectionEvent e){
-		if(!e.getValueIsAdjusting()){
-			resultat.setText((String)choix.getSelectedValue());
-			Onglets.polices.exemple();
-		}
-	}
-
-	JTextField resultat; JList<String> choix; JScrollPane defil;
-}
-
-/*====================================================================================
- *                    Création du panneau gérant la taille
- *====================================================================================*/
-
+/**
+ * Panneau permettant le choix de la taille
+ */
 @SuppressWarnings("serial")
 class Taille extends JPanel implements ActionListener{
+	/**
+	 * Gestion des clics sur les boutons "Valider" et "Annuler"
+	 */
 	public void actionPerformed(ActionEvent e){
 		if(e.getSource()==ok){
 			//Faire disparaître la boîte de dialogue sans la détruire
 			//pour pouvoir continuer à utiliser getter() de l'extérieur
-			arg0.setVisible(false);
+			appel.setVisible(false);
 
 		}
 		else if(e.getSource()==annuler){
@@ -257,14 +115,21 @@ class Taille extends JPanel implements ActionListener{
 			//pour pouvoir continuer à utiliser getter() de l'extérieur
 			hauteur.setText(String.valueOf(haut));
 			largeur.setText(String.valueOf(larg));
-			arg0.setVisible(false);
+			appel.setVisible(false);
 		}
 	}
+	
+	/**
+	 * Constructeur de la classe Taille
+	 * @param haut La hauteur par défaut
+	 * @param larg La largeur par défaut
+	 * @param appel La boîte de dialogue appelante
+	 */
 	public Taille(int haut, int larg, JDialog appel){
 		//Création et initialisation des composants et variables
 		this.haut = haut;
 		this.larg = larg;
-		arg0 = appel;
+		this.appel = appel;
 		haut_label = new JLabel("Hauteur : ");
 		larg_label = new JLabel("Largeur : ");
 		hauteur = new JTextField(10);
@@ -314,7 +179,10 @@ class Taille extends JPanel implements ActionListener{
 		add(global, new GridBagConstraints (0, 0, 1, 1, 0, 0, GridBagConstraints.CENTER, GridBagConstraints.CENTER, new Insets (0,0,0,0), 0, 0));
 	}
 
-	//Renvoyer les valeurs saisies par l'utilisateur sous forme d'un tableau d'entiers  
+	/**
+	 * Récupération des dimensions choisies par l'utilisateur  
+	 * @return Un tableau contenant les choix de l'utilisateur
+	 */
 	public int[] getter(){
 		int[] resultat = new int[2];
 		try{
@@ -332,18 +200,18 @@ class Taille extends JPanel implements ActionListener{
 		}
 		return resultat;
 	}
-	JLabel haut_label, larg_label; JTextField hauteur, largeur; JButton ok, annuler;
-	JDialog arg0; int haut, larg; Box global, hor1, hor2, hor3, hor4;
+	private JLabel haut_label, larg_label; private JTextField hauteur, largeur; private JButton ok, annuler;
+	private JDialog appel; private int haut, larg; private Box global, hor1, hor2, hor3, hor4;
 }
 
-/*====================================================================================
- *                    Création du panneau gérant la couleur
- *====================================================================================*/
+/**
+ * Panneau proposant le choix des couleurs utilisées
+ */
 @SuppressWarnings("serial")
 class Couleur extends JPanel implements ActionListener{
 	public Couleur(JTextArea cible, JDialog appel){
-		arg0 = appel;
-		texteCible = cible;
+		this.appel = appel;
+		this.cible = cible;
 		
 		fondCourant = cible.getBackground();
 		policeCourant = cible.getForeground();
@@ -400,17 +268,29 @@ class Couleur extends JPanel implements ActionListener{
 		add(global);
 	}
 
-	public static void setter(){
+	/**
+	 * Formatage les composants avec les couleurs courantes
+	 */
+	public void setter(){
 		couleurFond.setBackground(fondCourant);
 		couleurTexte.setBackground(policeCourant);
 		exemple.setBackground(fondCourant);
 		exemple.setForeground(policeCourant);
 	}
 
+	/**
+	 * Récupération des couleurs choisies par l'utilisateur
+	 * @return Un tableau contenant les choix de l'utilisateur
+	 */
 	public Color[] getter(){
 		return new Color[]{fondCourant, policeCourant};
 	}
 
+	/**
+	 * Affichage d'une boîte de dialogue gérant le choix de couleur
+	 * @param base Couleur courante
+	 * @return Le choix de l'utilisateur
+	 */
 	public Color lancerChoix(Color base){
 		Color resultat;
 		JColorChooser color_chooser = new JColorChooser();
@@ -421,6 +301,9 @@ class Couleur extends JPanel implements ActionListener{
 		return resultat;
 	}
 
+	/**
+	 * Gestion des clics sur les différents boutons
+	 */
 	public void actionPerformed(ActionEvent e){
 		if(e.getSource()==couleurFond){
 			fondCourant = lancerChoix(fondCourant);
@@ -432,16 +315,18 @@ class Couleur extends JPanel implements ActionListener{
 		}
 		else if(e.getSource()==ok){
 			//Masquer la boîte
-			arg0.setVisible(false);
+			appel.setVisible(false);
 		}
 		else if(e.getSource()==annuler){
 			//Remettre les valeurs de départ puis masquer la boîte
-			fondCourant = texteCible.getBackground();
-			policeCourant = texteCible.getForeground();
-			arg0.setVisible(false);
+			fondCourant = cible.getBackground();
+			policeCourant = cible.getForeground();
+			appel.setVisible(false);
 		}
 	}
 
-	static JButton couleurFond, couleurTexte, ok, annuler; static JTextArea exemple, texteCible; 
-	JLabel fond, texte;	static Color fondCourant, policeCourant; JDialog arg0;
+	private JButton couleurFond, couleurTexte, ok, annuler; private JTextArea exemple, cible;
+	@SuppressWarnings("unused")
+	private JLabel fond, texte;
+	private Color fondCourant, policeCourant; private JDialog appel;
 }
