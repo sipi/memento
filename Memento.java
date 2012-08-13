@@ -40,7 +40,9 @@ public class Memento extends JDialog implements ActionListener, DocumentListener
 	private static Handle handle;
 	private static Color couleurFond, couleurTexte;
 
-	//Initialise les chemins utilisés par le programme
+	/**
+	 * Initialisation des chemins vers les fichiers utilisés par le programme
+	 */
 	public static void chemins(){
 		//On utilise les variables systèmes afin de déterminer
 		//les différents chemins vers les fichiers qui seront utilisés
@@ -81,7 +83,9 @@ public class Memento extends JDialog implements ActionListener, DocumentListener
 	}
 	/*Inutile mais obligatoire*/public void changedUpdate(DocumentEvent e){}
 
-	//Interception des clics
+	/**
+	 * Interception des clics sur la liste proposée par l'icône en SysTray
+	 */
 	public void actionPerformed(ActionEvent e){
 		if(e.getSource()==aProposItem){
 			apropos.setVisible(true);
@@ -110,7 +114,6 @@ public class Memento extends JDialog implements ActionListener, DocumentListener
 			//pas détruite
 			ongl.dispose();
 		}
-		
 		else if(e.getSource()==boutonClose){
 			setVisible(false);
 		}
@@ -126,6 +129,10 @@ public class Memento extends JDialog implements ActionListener, DocumentListener
 		}
 	}
 
+	/**
+	 * Constructeur de la classe Memento
+	 * @param couleur La couleur par défaut
+	 */
 	public Memento(int couleur){
 		chemins();
 		
@@ -255,6 +262,9 @@ public class Memento extends JDialog implements ActionListener, DocumentListener
 		this.setVisible(true);
 	}
 	
+	/**
+	 * Définition de la couleur des différents éléments du mémo
+	 */
 	private static void coloriser(){
 		Color normal = couleurFond;
 		Color haut = new Color(Integer.parseInt(Integer.toHexString(normal.getRGB()).substring(2), 16)+0x60);
@@ -283,7 +293,9 @@ public class Memento extends JDialog implements ActionListener, DocumentListener
 		enregistrerPolice();
 	}
 
-	//Enregistrer la police courante
+	/**
+	 * Enregistrement de la police choisie par l'utilisateur dans de lichier de sauvegarde
+	 */
 	private void enregistrerPolice(){
 		//Initialiser les valeurs à enregistrer et créer le Writer
 		Font f = textPane.getFont();
@@ -306,7 +318,10 @@ public class Memento extends JDialog implements ActionListener, DocumentListener
 		}	
 	}
 
-	//Lire la police enregistrée
+	/**
+	 * Lecture de la police définie par l'utilisateur dans le fichier de sauvegarde
+	 * @return Un objet Font contenant les choix de l'utilisateur
+	 */
 	private Font lirePolice(){
 		//Créer la fonte futur-résultat et le lecteur
 		Font resultat;
@@ -377,7 +392,9 @@ public class Memento extends JDialog implements ActionListener, DocumentListener
 		return s;
 	}
 
-	//Lecture du fichier de configuration et application de ses paramètres
+	/**
+	 * Lecture du fichier de configuration et application de ses paramètres
+	 */
 	private void readOptionFile(){
 		try{
 
@@ -400,8 +417,9 @@ public class Memento extends JDialog implements ActionListener, DocumentListener
 		this.setLocation(x, y);
 	}
 
-	//Détection des paramètres courants et écriture de ceux-ci
-	//dans le fichier de configuration
+	/**
+	 * Détection des paramètres courants et écriture de ceux-ci dans le fichier de configuration
+	 */
 	public void editOptionFile(){
 		try{
 			dos = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(new File(locateOption))));

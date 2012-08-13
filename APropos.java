@@ -24,11 +24,17 @@ import java.io.*;
 import javax.swing.*;
 import javax.swing.text.*;
 
+/**
+ * Boîte de dialogue affichant les informations relatives au programme
+ */
 @SuppressWarnings("serial")
 public class APropos extends JDialog {
 
 	
-	//Créer la boîte de dialogue "A propos"
+	/**
+	 * Créer la boîte de dialogue
+	 * @param p Le mémo rattaché
+	 */
 	public APropos(Memento p) {
 		initComponents();
 		this.memento = p;
@@ -38,7 +44,9 @@ public class APropos extends JDialog {
 		this.setLocationRelativeTo(p);
 	}
 
-	//Créer les composants
+	/**
+	 * Créer les composants
+	 */
 	private void initComponents() {
 		
 		text 			= new JTextArea();
